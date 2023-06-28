@@ -1,43 +1,54 @@
-import os
-
-from dotenv import load_dotenv
-
-_DEFAULT_VALUES = {
-    "platform": "chrome",
-    "resolution": "fullscreen",
-    "run_type": "local",
-}
+from config.constants import EMPTY
+from utilities.utils import get_variable
 
 
 class LocalEnvironment:
-    def __init__(self):
-        load_dotenv()
-        self._PLATFORM = os.getenv("PLATFORM").lower() or _DEFAULT_VALUES.get("platform")
-        self._RESOLUTION = os.getenv("RESOLUTION").lower() or _DEFAULT_VALUES.get("resolution")
-        self._RUN_TYPE = os.getenv("RUN_TYPE").lower() or _DEFAULT_VALUES.get("run_type")
-        self._SL_USERNAME = os.getenv("SL_USERNAME")
-        self._SL_ACCESSKEY = os.getenv("SL_ACCESSKEY")
+    def __init__(self) -> None:
+        self._COMPONENT = get_variable("COMPONENT")
+        self._EXECUTION = get_variable("EXECUTION")
+        self._BROWSER = get_variable("BROWSER")
+        self._RESOLUTION = get_variable("RESOLUTION")
+        self._APP_PLATFORM = get_variable("APP_PLATFORM")
+        self._SL_USERNAME = get_variable("SL_USERNAME")
+        self._SL_ACCESSKEY = get_variable("SL_ACCESSKEY")
 
-    def get_platform(self):
-        return self._PLATFORM
+    def get_component(self) -> str:
+        return self._COMPONENT or "web"
 
-    def get_resolution(self):
-        return self._RESOLUTION
+    def get_execution(self) -> str:
+        return self._EXECUTION or "local"
 
-    def get_run_type(self):
-        return self._RUN_TYPE
+    def get_browser(self) -> str:
+        return self._BROWSER or "chrome"
 
-    def is_local(self):
-        return self._RUN_TYPE == "local"
+    def get_resolution(self) -> str:
+        return self._RESOLUTION or "desktop"
 
-    def is_responsive(self):
-        return self._RESOLUTION != "fullscreen"
+    def get_app_platform(self) -> str:
+        return self._APP_PLATFORM
 
-    def is_web(self):
-        return self._PLATFORM != "android" and self._PLATFORM != ""
-
-    def get_username(self):
+    def get_username(self) -> str:
         return self._SL_USERNAME
 
-    def get_accesskey(self):
+    def get_accesskey(self) -> str:
         return self._SL_ACCESSKEY
+
+    def is_mobile(self) -> bool:
+        return self.get_resolution() != "desktop"
+
+    def check_app_environment(self) -> bool:
+        app_vars = {
+            "component": self.get_component(),
+            "execution": self.get_execution(),
+            "app_platform": self.get_app_platform(),
+        }
+        return all(value != EMPTY for value in app_vars.values())
+
+    def check_web_environment(self) -> bool:
+        web_vars = {
+            "browser": self.get_browser(),
+            "resolution": self.get_resolution(),
+            "execution": self.get_execution(),
+            "component": self.get_component(),
+        }
+        return all(value != EMPTY for value in web_vars.values())
