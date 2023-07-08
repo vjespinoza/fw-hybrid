@@ -3,7 +3,7 @@ from typing import Tuple, Generator
 import pytest
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from config.driver import get_web_driver
+from config.driver.driver import get_web_driver
 
 
 @pytest.fixture()

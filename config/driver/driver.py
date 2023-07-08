@@ -40,11 +40,11 @@ def get_web_driver(browser: str = 'chrome', is_local: bool = True) -> WebDriver:
     :return:
     """
     if is_local:
-        web_driver_caller: Callable[[Any], WebDriver] = _WEB_DRIVERS[f'local-{browser}']
-        return web_driver_caller(None)
+        local_driver: Callable[[Any], WebDriver] = _WEB_DRIVERS[f'local-{browser}']
+        return local_driver(None)
     else:
-        app_driver_caller: Callable[[Any], WebDriver] = _WEB_DRIVERS['remote']
-        return app_driver_caller(None)
+        remote_driver: Callable[[Any], WebDriver] = _WEB_DRIVERS['remote']
+        return remote_driver(None)
 
 
 if __name__ == '__main__':
