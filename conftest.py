@@ -1,21 +1,31 @@
+from typing import Tuple, Generator
+
 import pytest
-from appium import webdriver as awd
-from selenium import webdriver as swd
+from selenium.webdriver.remote.webdriver import WebDriver
+
+from config.driver import get_web_driver
 
 
 @pytest.fixture()
-def web_driver_setup() -> swd:
-    print("Web driver init")
-
-    yield
-
-    print("Web driver close")
+def execution_params() -> Tuple[str, bool]:
+    """
+    Reads local environment and returns execution configuration variables
+    :return: tuple with environment variables
+    """
+    print("Reading env variables")
+    return "firefox", True
 
 
 @pytest.fixture()
-def app_driver_setup() -> awd:
-    print("App driver init")
-
-    yield
-
-    print("App driver close")
+def set_up(execution_params: Tuple[str, bool]) -> Generator[WebDriver, None, None]:
+    """
+    Preforms driver set up and teardown
+    :param execution_params:
+    :return: driver instance
+    """
+    print("Using driver fixture - STAR")
+    driver = get_web_driver(*execution_params)
+    driver.get('https://youtube.com/')
+    yield driver
+    driver.close()
+    print("Using driver fixture - END")

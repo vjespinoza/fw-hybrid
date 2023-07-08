@@ -32,8 +32,7 @@ _APP_DRIVERS = {
 }
 
 
-def get_web_driver(is_local: bool, browser: str = 'chrome') -> WebDriver:
-    print(browser)
+def get_web_driver(browser: str = 'chrome', is_local: bool = True) -> WebDriver:
     if is_local:
         web_driver_caller: Callable[[Any], WebDriver] = _WEB_DRIVERS[f'local-{browser}']
         return web_driver_caller(None)

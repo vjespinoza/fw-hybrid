@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.mark.usefixtures("web_driver_setup")
+@pytest.mark.usefixtures("set_up")
 class TestDummyWeb:
     def test_dummy_web_01(self) -> None:
         pass
