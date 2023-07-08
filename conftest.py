@@ -13,7 +13,7 @@ def execution_params() -> Tuple[str, bool]:
     :return: tuple with environment variables
     """
     print("Reading env variables")
-    return "firefox", True
+    return "chrome", True
 
 
 @pytest.fixture()

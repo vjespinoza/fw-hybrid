@@ -6,3 +6,7 @@ strict = true
 exclude = [
     "venv"
 ]
+
+[[tool.mypy.overrides]]
+module = "config.driver.*"
+allow_untyped_calls = true
