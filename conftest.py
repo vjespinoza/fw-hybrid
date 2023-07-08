@@ -20,7 +20,7 @@ def execution_params() -> Tuple[str, bool]:
 def set_up(execution_params: Tuple[str, bool]) -> Generator[WebDriver, None, None]:
     """
     Preforms driver set up and teardown
-    :param execution_params:
+    :param execution_params: values obtained from the local environment
     :return: driver instance
     """
     print("Using driver fixture - STAR")
