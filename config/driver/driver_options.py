@@ -2,31 +2,30 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.options import BaseOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
+from config.constants import DESKTOP
 from config.driver.driver_helper import set_mobile_emulation, set_remote_options
+from utilities.utils import browser_resolution
 
 
-def chrome_options(is_local: bool = True) -> BaseOptions:
+def chrome_options(is_local: bool = True, screen_size: str = DESKTOP) -> BaseOptions:
     opts = ChromeOptions()
-    ua = "Mozilla/5.0 (Linux; Android 11; Pixel 5 Build/RD1A.201105.003.C1; wv)" \
-         " AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.66" \
-         " Mobile Safari/537.36"
+    resolution = browser_resolution(screen_size)
     if is_local:
-        opts.add_experimental_option("mobileEmulation",
-                                     set_mobile_emulation((393, 851), ua))
+        opts.add_experimental_option(
+            "mobileEmulation",
+            set_mobile_emulation((resolution[0], resolution[1]), resolution[2]))
     else:
         set_remote_options(options=opts)
     return opts
 
 
-def firefox_options(is_local: bool = True) -> BaseOptions:
+def firefox_options(is_local: bool = True, screen_size: str = DESKTOP) -> BaseOptions:
     opts = FirefoxOptions()
-    ua = "Mozilla/5.0 (Linux; Android 11; Pixel 5 Build/RD1A.201105.003.C1; wv)" \
-         " AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.66" \
-         " Mobile Safari/537.36"
+    resolution = browser_resolution(screen_size)
     if is_local:
-        opts.set_preference("general.useragent.override", ua)
-        opts.add_argument(argument="--width=393")
-        opts.add_argument(argument="--height=851")
+        opts.set_preference("general.useragent.override", resolution[2])
+        opts.add_argument(argument=f"--width={resolution[0]}")
+        opts.add_argument(argument=f"--height={resolution[1]}")
     else:
         set_remote_options(options=opts)
     return opts
