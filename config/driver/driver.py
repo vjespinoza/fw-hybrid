@@ -9,56 +9,68 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
+from config.constants import DESKTOP
 from config.driver.driver_options import chrome_options, firefox_options
 
 _BASE_URL = 'https://youtube.com/'
 _APPIUM_SERVER = 'https://webdriver.io/'
 _SAUCELABS_SERVER = 'https://ondemand.eu-central-1.saucelabs.com:443/wd/hub'
 
-_WEB_DRIVERS = {
+_DRIVERS = {
     "local-chrome": lambda opts: swd.Chrome(
         service=ChromeService(ChromeDriverManager().install()), options=opts),
     "local-firefox": lambda opts: swd.Firefox(
         service=FirefoxService(GeckoDriverManager().install()), options=opts),
-    "remote": lambda opts: swd.Remote(command_executor=_SAUCELABS_SERVER, options=opts)
-}
-
-_APP_DRIVERS = {
-    "local": lambda opts: awd.webdriver.WebDriver(
+    "local-android": lambda opts: awd.webdriver.WebDriver(
         command_executor=_APPIUM_SERVER, options=opts),
-    "remote": lambda opts: awd.webdriver.WebDriver(
+    "remote-web": lambda opts: swd.Remote(
+        command_executor=_SAUCELABS_SERVER, options=opts),
+    "remote-app": lambda opts: awd.webdriver.WebDriver(
         command_executor=_SAUCELABS_SERVER, options=opts)
 }
 
 _DRIVER_OPTIONS = {
-    "chrome": lambda is_local: chrome_options(is_local=is_local),
-    "firefox": lambda is_local: firefox_options(is_local=is_local)
+    "chrome": lambda is_local, screen_size: chrome_options(
+        is_local=is_local, screen_size=screen_size),
+    "firefox": lambda is_local, screen_size: firefox_options(
+        is_local=is_local, screen_size=screen_size)
 }
 
 
-def get_web_driver(
-        browser: str = 'chrome', is_local: bool = True
+def get_driver(
+        component: str,
+        name: str,
+        size: str,
+        is_local: bool
 ) -> WebDriver:
     """
     Gets the required driver instance based on the args received
-    :param browser: name of the browser
-    :param is_local: boolean that defines the type of execution
+    :param component: Type of component (Web or App)
+    :param name: name of the browser or app OS
+    :param size: screen size
+    :param is_local: execution type boolean (local or remote)
     :return:
     """
     if is_local:
-        local_driver: Callable[[BaseOptions], WebDriver] = _WEB_DRIVERS[f'local-{browser}']
-        return local_driver(_get_options(name=browser, is_local=is_local))
+        local_driver: Callable[[BaseOptions], WebDriver] = _DRIVERS[f'local-{name}']
+        dvr = local_driver(_get_options(name=name, is_local=is_local, screen_size=size))
+        if size == DESKTOP:
+            dvr.maximize_window()
+        return dvr
     else:
-        remote_driver: Callable[[BaseOptions], WebDriver] = _WEB_DRIVERS['remote']
-        return remote_driver(_get_options(name=browser, is_local=is_local))
+        remote_driver: Callable[[BaseOptions], WebDriver] = _DRIVERS[f'remote-{component}']
+        return remote_driver(_get_options(name=name, is_local=is_local, screen_size=size))
 
 
-def _get_options(name: str, is_local: bool) -> BaseOptions:
-    options_caller: Callable[[bool], BaseOptions] = _DRIVER_OPTIONS[name]
-    options = options_caller(is_local)
+def _get_options(name: str, is_local: bool, screen_size: str) -> BaseOptions:
+    options_caller: Callable[[bool, str], BaseOptions] = _DRIVER_OPTIONS[name]
+    options = options_caller(is_local, screen_size)
     return options
 
 # if __name__ == '__main__':
-#     d = get_web_driver(browser='firefox', is_local=True)
-#     d.get(_BASE_URL)
-#     d.close()
+#     def myfunc(name: str = 'test'):
+#         print(f'Hello {name}!')
+#
+#
+#     myfunc()
+#     myfunc("Vic")
