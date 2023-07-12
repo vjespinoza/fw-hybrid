@@ -1,21 +1,21 @@
+from typing import Tuple
+
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.options import BaseOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
-from config.driver.driver_helper import set_mobile_emulation, set_remote_options
 from utilities.utils import browser_resolution
 
 
 def chrome_options(is_local: bool, screen_size: str) -> BaseOptions:
     opts = ChromeOptions()
     resolution = browser_resolution(screen_size)
-    print(f'########### {resolution}')
     if is_local:
         opts.add_experimental_option(
             "mobileEmulation",
-            set_mobile_emulation((resolution[0], resolution[1]), resolution[2]))
+            _set_mobile_emulation((resolution[0], resolution[1]), resolution[2]))
     else:
-        set_remote_options(options=opts)
+        _set_remote_options(options=opts)
     return opts
 
 
@@ -27,5 +27,23 @@ def firefox_options(is_local: bool, screen_size: str) -> BaseOptions:
         opts.add_argument(argument=f"--width={resolution[0]}")
         opts.add_argument(argument=f"--height={resolution[1]}")
     else:
-        set_remote_options(options=opts)
+        _set_remote_options(options=opts)
     return opts
+
+
+def _set_remote_options(options: BaseOptions) -> None:
+    options.browser_version = 'latest'
+    options.platform_name = 'Windows 10'
+    options.set_capability("sauce:options", "Implement helper func")
+
+
+def _set_mobile_emulation(resolution: Tuple[int, int], user_agent: str) \
+        -> dict[str, dict[str, int | float] | str]:
+    return {
+        "deviceMetrics": {
+            "width": resolution[0],
+            "height": resolution[1],
+            "pixelRatio": 3.0,
+        },
+        "userAgent": user_agent
+    }
