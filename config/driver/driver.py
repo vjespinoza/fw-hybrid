@@ -9,11 +9,11 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
-from config.constants import DESKTOP
-from config.driver.driver_options import chrome_options, firefox_options
+from config.constants import DESKTOP, COMPONENT_WEB, COMPONENT_APP
+from config.driver.driver_options import chrome_options, firefox_options, android_options
 
 _BASE_URL = 'https://youtube.com/'
-_APPIUM_SERVER = 'https://webdriver.io/'
+_APPIUM_SERVER = 'http://localhost:4723'
 _SAUCELABS_SERVER = 'https://ondemand.eu-central-1.saucelabs.com:443/wd/hub'
 
 _DRIVERS = {
@@ -29,7 +29,7 @@ _DRIVERS = {
         command_executor=_SAUCELABS_SERVER, options=opts)
 }
 
-_DRIVER_OPTIONS = {
+_WEB_DRIVER_OPTIONS = {
     "chrome": lambda is_local, screen_size: chrome_options(
         is_local=is_local, screen_size=screen_size),
     "firefox": lambda is_local, screen_size: firefox_options(
@@ -38,39 +38,37 @@ _DRIVER_OPTIONS = {
 
 
 def get_driver(
-        component: str,
-        name: str,
-        size: str,
-        is_local: bool
+        name: str, size: str, is_web: bool, is_local: bool
 ) -> WebDriver:
     """
     Gets the required driver instance based on the args received
-    :param component: Type of component (Web or App)
-    :param name: name of the browser or app OS
-    :param size: screen size
-    :param is_local: execution type boolean (local or remote)
-    :return:
+    :param name: Name of the browser or app OS
+    :param size: Screen size for web drivers
+    :param is_web: Boolean defining type of component (web or app)
+    :param is_local: Boolean defining type of execution (local or remote)
+    :return: driver
     """
+
+    options = _get_web_options(name=name, is_local=is_local, screen_size=size) \
+        if is_web else _get_app_options(is_local=is_local)
+
     if is_local:
         local_driver: Callable[[BaseOptions], WebDriver] = _DRIVERS[f'local-{name}']
-        dvr = local_driver(_get_options(name=name, is_local=is_local, screen_size=size))
+        dvr = local_driver(options)
         if size == DESKTOP:
             dvr.maximize_window()
         return dvr
     else:
+        component = COMPONENT_WEB if is_web else COMPONENT_APP
         remote_driver: Callable[[BaseOptions], WebDriver] = _DRIVERS[f'remote-{component}']
-        return remote_driver(_get_options(name=name, is_local=is_local, screen_size=size))
+        return remote_driver(options)
 
 
-def _get_options(name: str, is_local: bool, screen_size: str) -> BaseOptions:
-    options_caller: Callable[[bool, str], BaseOptions] = _DRIVER_OPTIONS[name]
+def _get_web_options(name: str, is_local: bool, screen_size: str) -> BaseOptions:
+    options_caller: Callable[[bool, str], BaseOptions] = _WEB_DRIVER_OPTIONS[name]
     options = options_caller(is_local, screen_size)
     return options
 
-# if __name__ == '__main__':
-#     def myfunc(name: str = 'test'):
-#         print(f'Hello {name}!')
-#
-#
-#     myfunc()
-#     myfunc("Vic")
+
+def _get_app_options(is_local: bool) -> BaseOptions:
+    return android_options(is_local=is_local)

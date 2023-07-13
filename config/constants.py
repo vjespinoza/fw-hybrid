@@ -1,6 +1,6 @@
 BROWSER_RESOLUTIONS = "config/browser_resolutions.json"
 CAPABILITIES_FILE = "config/configdata/capabilities.json"
-APK_FILE_LOCAL = "\\resources\\Android-NativeDemoApp-0.4.0.apk"
+APK_FILE_LOCAL = "D:\\_dev\\_python\\fw-hybrid\\resources\\Android-NativeDemoApp-0.4.0.apk"
 APK_FILE_REMOTE = "storage:filename=Android-NativeDemoApp-0.4.0.apk"
 DEVICE_NAME_LOCAL = "Pixel_3a_API_33_x86_64"
 DEVICE_NAME_REMOTE = "Android GoogleAPI Emulator"
