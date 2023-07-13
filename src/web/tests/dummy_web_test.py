@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.mark.usefixtures("set_up")
+@pytest.mark.usefixtures("setup")
 class TestDummyWeb:
     def test_dummy_web_01(self) -> None:
-        print('Dummy web test 01')
+        print('Dummy WEB test 01')

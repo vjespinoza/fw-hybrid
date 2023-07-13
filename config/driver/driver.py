@@ -55,7 +55,7 @@ def get_driver(
     if is_local:
         local_driver: Callable[[BaseOptions], WebDriver] = _DRIVERS[f'local-{name}']
         dvr = local_driver(options)
-        if size == DESKTOP:
+        if size == DESKTOP and is_web:
             dvr.maximize_window()
         return dvr
     else:

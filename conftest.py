@@ -24,7 +24,7 @@ def execution_details() -> Tuple[str, str, bool, bool]:
 
 
 @pytest.fixture()
-def set_up(
+def setup(
         execution_details: Tuple[str, str, bool, bool]
 ) -> Generator[WebDriver, None, None]:
     """
@@ -32,9 +32,11 @@ def set_up(
     :param execution_details: values obtained from the local environment
     :return: driver instance
     """
+    is_web = execution_details[2]
     print("Using driver fixture - START")
     driver = get_driver(*execution_details)
-    driver.get('https://youtube.com/')
+    if is_web:
+        driver.get('https://youtube.com/')
     yield driver
-    driver.close()
+    driver.quit()
     print("Using driver fixture - END")

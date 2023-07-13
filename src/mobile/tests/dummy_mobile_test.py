@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.mark.usefixtures("app_driver_setup")
+@pytest.mark.usefixtures("setup")
 class TestDummyApp:
     def test_dummy_app_01(self) -> None:
-        pass
+        print('Dummy APP test 01')
