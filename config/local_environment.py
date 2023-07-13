@@ -34,3 +34,6 @@ class LocalEnvironment:
 
     def is_local(self) -> bool:
         return self.get_execution() == "local"
+
+    def is_web(self) -> bool:
+        return self.get_component() == 'web'

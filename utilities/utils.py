@@ -25,3 +25,7 @@ def browser_resolution(screen_size: str) -> Tuple[int, int, str]:
     height = data[screen_size]['resolution'][1]
     user_agent = data[screen_size]['user_agent']
     return width, height, user_agent
+
+
+def capitalize_text(text: str) -> str:
+    return text.title()
