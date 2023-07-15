@@ -1,19 +1,15 @@
 import json
 import os
-from typing import Any
+from typing import Any, Tuple
 
-from config.exceptions import MissingEnvironmentVariableError
 from dotenv import load_dotenv
 
-from config.constants import USER_AGENTS_FILE, WEB_CONFIG_FILE
+from config.constants import BROWSER_RESOLUTIONS
 
 
 def get_variable(var_name: str) -> str:
     load_dotenv()
-    if os.getenv(var_name) is None:
-        raise MissingEnvironmentVariableError(var_name)
-    else:
-        return str(os.getenv(var_name)).lower()
+    return str(os.getenv(var_name)).lower()
 
 
 def extract_json_data(file: str) -> Any:
@@ -23,16 +19,13 @@ def extract_json_data(file: str) -> Any:
     return data
 
 
-def get_user_agent(resolution: str) -> str:
-    data = extract_json_data(USER_AGENTS_FILE)
-    return str(data[resolution])
+def browser_resolution(screen_size: str) -> Tuple[int, int, str]:
+    data = extract_json_data(file=BROWSER_RESOLUTIONS)
+    width = data[screen_size]['resolution'][0]
+    height = data[screen_size]['resolution'][1]
+    user_agent = data[screen_size]['user_agent']
+    return width, height, user_agent
 
 
-def get_screen_resolutions(resolution: str, as_tuples: bool) -> str | tuple[int, ...]:
-    data = extract_json_data(WEB_CONFIG_FILE)
-    res = data["resolutions"][resolution]
-    if as_tuples:
-        w, h = res.split("x")
-        return tuple((int(w), int(h)))
-    else:
-        return str(res)
+def capitalize_text(text: str) -> str:
+    return text.title()
